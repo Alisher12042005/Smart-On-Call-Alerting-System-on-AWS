@@ -43,10 +43,6 @@ Each alert email contains:
 
 This ensures alerts are **to-the-point** and **free from noise**.
 
-📸 **Alert Email Screenshot**
-
-![SNS Alert Email](../screenshots/sns-email.png)
-
 ---
 
 ### 🔹 Why Amazon SNS
@@ -62,3 +58,4 @@ This ensures alerts are **to-the-point** and **free from noise**.
 - Reduced alert fatigue
 - Faster incident response
 - Production-ready notification pipeline
+
