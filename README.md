@@ -1,96 +1,118 @@
 # Smart On-Call Alerting System on AWS
 
-A serverless AWS-based monitoring solution that reduces alert fatigue by sending notifications only for sustained and actionable incidents instead of temporary resource spikes.
+A serverless monitoring and alerting solution built on AWS that helps reduce alert fatigue by notifying engineers only when a sustained and actionable issue occurs. The project demonstrates how cloud monitoring, event-driven computing, and automated notifications can be combined to improve operational reliability.
 
 ## Project Overview
 
-In many cloud environments, short-lived CPU spikes often trigger unnecessary alerts. This can lead to alert fatigue, delayed responses, and missed critical incidents.
+In many cloud environments, temporary CPU spikes often trigger unnecessary alerts. These repeated notifications can overwhelm engineers, causing important incidents to be overlooked.
 
-The Smart On-Call Alerting System addresses this problem by monitoring EC2 CPU utilization and generating alerts only when predefined thresholds are consistently breached over a period of time.
+This project addresses that problem by monitoring an Amazon EC2 instance and generating alerts only when CPU utilization remains above a defined threshold for a sustained period. By filtering out short-lived spikes, the system ensures that alerts are meaningful and require attention.
 
 ## Architecture
 
-EC2 Instance → CloudWatch Metrics → CloudWatch Alarm → AWS Lambda → Amazon SNS → Engineer Email
+The system follows an event-driven architecture:
+
+```text
+EC2 Instance
+     ↓
+CloudWatch Metrics
+     ↓
+CloudWatch Alarm
+     ↓
+AWS Lambda
+     ↓
+Amazon SNS
+     ↓
+Engineer Email
+```
+
+### How It Works
+
+**Amazon EC2** hosts the workload being monitored. During testing, CPU stress was intentionally generated to simulate a production issue.
+
+**Amazon CloudWatch** continuously collects performance metrics such as CPU utilization from the EC2 instance.
+
+**CloudWatch Alarm** evaluates these metrics against predefined thresholds. The alarm is configured with multiple evaluation periods to ignore short spikes and detect only sustained problems.
+
+**AWS Lambda** is triggered automatically when the alarm enters the ALARM state. The Lambda function processes the event and prepares an appropriate alert message.
+
+**Amazon SNS (Simple Notification Service)** receives the alert from Lambda and delivers it to subscribed recipients.
+
+Finally, the **on-call engineer receives an email notification** containing the severity of the issue and suggested actions for faster resolution.
 
 ## AWS Services Used
 
-* Amazon EC2
-* Amazon CloudWatch
-* AWS Lambda
-* Amazon SNS
-* AWS IAM
+### Amazon EC2
 
-## Features
+Used to host the test workload and generate CPU utilization data for monitoring.
 
-* CPU utilization monitoring in real time
-* Noise-controlled alerting using CloudWatch evaluation periods
-* Serverless event-driven architecture
-* Email notifications through Amazon SNS
+### Amazon CloudWatch
+
+Used to collect system metrics and evaluate CPU performance in real time.
+
+### AWS Lambda
+
+Used to process alarm events without managing servers, making the solution fully serverless.
+
+### Amazon SNS
+
+Used to distribute notifications to subscribed email recipients.
+
+### AWS IAM
+
+Used to securely manage permissions between CloudWatch, Lambda, SNS, and other AWS services.
+
+## Key Features
+
+* Real-time CPU utilization monitoring
+* Noise-controlled alerting using evaluation periods
+* Event-driven serverless architecture
+* Automated email notifications
 * Severity-based alert messages
-* Suggested actions included in notifications
-* Reduced duplicate and unnecessary alerts
+* Suggested actions included in alerts
+* Reduced duplicate and unnecessary notifications
 
-## Testing Performed
+## Testing and Validation
 
-### 1. CPU Stress Simulation
+To validate the system, an EC2 instance was created and CPU load was generated using Linux stress commands. The load was maintained for several minutes to simulate a real operational issue.
 
-* Created an EC2 instance
-* Generated CPU load using Linux stress commands
-* Maintained load for several minutes to simulate a production issue
+CloudWatch metrics and alarms were monitored to verify that the alarm entered the ALARM state only after the configured threshold conditions were met.
 
-### 2. CloudWatch Alarm Validation
-
-* Configured CPU utilization alarms
-* Used multiple datapoints and evaluation periods
-* Verified alarm state transitions
-
-### 3. Lambda Execution Verification
-
-* Monitored Lambda invocations
-* Confirmed successful execution without errors
-* Validated alert generation logic
-
-### 4. SNS Notification Testing
-
-* Created and confirmed SNS subscriptions
-* Verified successful email delivery
-* Checked alert content and severity information
+Lambda invocations were checked to ensure successful execution without errors, and SNS notifications were verified by confirming delivery of alert emails containing the expected information.
 
 ## Repository Structure
 
 ```text
-├── architecture/     # Architecture diagrams and workflow
-├── cloudwatch/       # Alarm configuration details
-├── ec2/              # CPU stress testing documentation
-├── iam/              # IAM roles and permissions
-├── lambda/           # Lambda function source code
-├── sns/              # SNS topic configuration
-└── LICENSE
+architecture/   - Architecture diagrams and workflow explanation
+cloudwatch/     - CloudWatch alarm configuration
+ec2/            - CPU stress testing documentation
+iam/            - IAM roles and permissions
+lambda/         - Lambda function source code
+sns/            - SNS topic and subscription configuration
 ```
 
 ## Business Benefits
 
-* Reduced alert fatigue
-* Faster incident response
-* Improved system reliability
-* Better operational efficiency
-* Cleaner monitoring workflows
+This solution demonstrates how cloud-native monitoring systems can improve operational efficiency by:
 
-## Future Improvements
+* Reducing alert fatigue
+* Improving incident response times
+* Increasing system reliability
+* Helping engineers focus on critical issues
+* Supporting scalable monitoring practices
+
+## Future Enhancements
+
+Possible future improvements include:
 
 * Slack and Microsoft Teams integration
 * Multi-level severity classification
-* Auto-remediation using Systems Manager
-* Dashboard visualization using CloudWatch Dashboards
+* Automated remediation workflows
+* CloudWatch dashboards for visualization
 * Multi-metric alert correlation
 
 ## Author
 
-**Mohd Alisher Hussain**
+Mohd Alisher Hussain
 
 Aspiring Cloud Engineer | Computer Science Engineering Student
-
-
-## License
-
-This project is licensed under the MIT License.
